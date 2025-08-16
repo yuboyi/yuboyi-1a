@@ -3,35 +3,42 @@ import React, { useState, useEffect, useMemo } from 'react';
 // @ts-ignore;
 import { useToast } from '@/components/ui';
 // @ts-ignore;
-import { Filter } from 'lucide-react';
+import { Filter, MenuUnfold, MenuFold } from 'lucide-react';
 
 import { SupplierFilter } from '@/components/SupplierFilter';
 import { SupplierTable } from '@/components/SupplierTable';
 import { SearchBar } from '@/components/SearchBar';
-// 模拟数据（实际应从云开发数据库获取）
+// 氚云标准数据模型
+const categories = [{
+  id: 'cat1',
+  name: '电子产品'
+}, {
+  id: 'cat2',
+  name: '办公用品'
+}];
 const mockSuppliers = [{
   _id: '1',
-  name: '深圳华强电子',
+  name: '深圳华强电子有限公司',
   category: 'cat1',
   contact: '0755-88888888'
 }, {
   _id: '2',
-  name: '广州文具批发',
+  name: '广州文具批发市场',
   category: 'cat2',
   contact: '020-66666666'
 }, {
   _id: '3',
-  name: '东莞电子科技',
+  name: '东莞电子科技有限公司',
   category: 'cat1',
   contact: '0769-77777777'
 }, {
   _id: '4',
-  name: '佛山办公用品',
+  name: '佛山办公用品有限公司',
   category: 'cat2',
   contact: '0757-55555555'
 }, {
   _id: '5',
-  name: '珠海电子厂',
+  name: '珠海电子制造厂',
   category: 'cat1',
   contact: '0756-44444444'
 }, {
@@ -39,23 +46,6 @@ const mockSuppliers = [{
   name: '中山文具公司',
   category: 'cat2',
   contact: '0760-33333333'
-}, {
-  _id: '7',
-  name: '惠州电子供应',
-  category: 'cat1',
-  contact: '0752-22222222'
-}, {
-  _id: '8',
-  name: '汕头办公批发',
-  category: 'cat2',
-  contact: '0754-11111111'
-}];
-const categories = [{
-  id: 'cat1',
-  name: '电子产品'
-}, {
-  id: 'cat2',
-  name: '办公用品'
 }];
 export default function Suppliers(props) {
   const {
@@ -65,21 +55,21 @@ export default function Suppliers(props) {
   const [loading, setLoading] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(categories.map(c => c.id));
   const [searchQuery, setSearchQuery] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // 模拟异步加载
+  // 模拟氚云数据加载
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
       setSuppliers(mockSuppliers);
       setLoading(false);
-    }, 600);
+    }, 400);
   }, []);
 
-  // 实时筛选
+  // 实时筛选逻辑
   const filteredSuppliers = useMemo(() => {
     return suppliers.filter(supplier => {
-      const matchCategory = selectedCategories.length === 0 || selectedCategories.includes(supplier.category);
+      const matchCategory = selectedCategories.includes(supplier.category);
       const matchSearch = supplier.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCategory && matchSearch;
     });
@@ -88,35 +78,37 @@ export default function Suppliers(props) {
     const updated = checked ? [...selectedCategories, categoryId] : selectedCategories.filter(id => id !== categoryId);
     setSelectedCategories(updated);
   };
-  return <div className="flex h-screen bg-background">
-      {/* 移动端遮罩 */}
-      {sidebarOpen && <div className="fixed inset-0 bg-black/30 z-20 md:hidden" onClick={() => setSidebarOpen(false)} />}
-
-      {/* 侧边栏 */}
+  return <div className="flex h-screen bg-[#f5f7fa]">
+      {/* 左侧导航 */}
       <aside className={`
-          fixed md:static top-0 left-0 h-full z-30
-          transform transition-transform duration-200
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          md:translate-x-0
+          bg-white border-r border-[#e6e8eb] transition-all duration-200
+          ${sidebarCollapsed ? 'w-12' : 'w-56'}
         `}>
-        <SupplierFilter categories={categories} selectedCategories={selectedCategories} onFilterChange={handleFilterChange} onClose={() => setSidebarOpen(false)} />
+        <div className="flex items-center justify-between p-3 border-b border-[#e6e8eb]">
+          {!sidebarCollapsed && <span className="text-sm font-medium text-[#262626]">导航</span>}
+          <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="p-1 rounded hover:bg-[#f5f7fa]">
+            {sidebarCollapsed ? <MenuUnfold size={16} /> : <MenuFold size={16} />}
+          </button>
+        </div>
+        
+        {!sidebarCollapsed && <SupplierFilter categories={categories} selectedCategories={selectedCategories} onFilterChange={handleFilterChange} className="border-0" />}
       </aside>
 
-      {/* 主内容 */}
+      {/* 主内容区 */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* 顶部工具栏 */}
-        <header className="flex items-center justify-between p-4 border-b border-border bg-card">
-          <h1 className="text-xl font-semibold text-foreground">供应商管理</h1>
+        <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#e6e8eb]">
+          <h1 className="text-base font-medium text-[#262626]">供应商管理</h1>
           <div className="flex items-center gap-3">
             <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="搜索供应商名称" />
-            <button onClick={() => setSidebarOpen(true)} className="md:hidden p-2 rounded-md hover:bg-muted" aria-label="打开筛选">
-              <Filter size={20} />
+            <button className="chy-btn-primary">
+              新增供应商
             </button>
           </div>
         </header>
 
         {/* 表格区域 */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-auto p-4">
           <SupplierTable suppliers={filteredSuppliers} categories={categories} loading={loading} />
         </div>
       </main>

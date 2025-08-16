@@ -1,0 +1,42 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 98%; /* #f5f7fa */
+    --foreground: 220 10% 10%;
+    
+    --primary: 217 91% 60%; /* #1677ff */
+    --primary-foreground: 0 0% 100%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 220 10% 10%;
+    
+    --border: 220 13% 91%;
+    --input: 0 0% 100%;
+    
+    /* 氚云专用色值 */
+    --chy-primary: #1677ff;
+    --chy-bg: #f5f7fa;
+    --chy-border: #e6e8eb;
+  }
+}
+
+/* 氚云组件样式覆盖 */
+@layer components {
+  .chy-btn-primary {
+    @apply bg-[#1677ff] text-white rounded-md px-4 py-2 text-sm font-medium
+           hover:bg-[#0958d9] transition-colors;
+  }
+  
+  .chy-input {
+    @apply h-8 px-3 py-1 text-sm border border-[#e6e8eb] rounded-md
+           focus:border-[#1677ff] focus:outline-none;
+  }
+  
+  .chy-table-header {
+    @apply bg-[#fafafa] text-[#262626] font-medium text-sm;
+  }
+}
