@@ -3,19 +3,23 @@ import React from 'react';
 // @ts-ignore;
 import { Checkbox } from '@/components/ui';
 // @ts-ignore;
-import { Filter } from 'lucide-react';
+import { Filter, X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 export function SupplierFilter({
   categories,
   selectedCategories,
   onFilterChange,
+  onClose,
   className
 }) {
   return <div className={cn('w-64 bg-white border-r border-gray-200 flex flex-col', className)}>
       <div className="flex items-center px-4 py-3 border-b border-gray-200 bg-gray-50">
         <Filter size={16} className="mr-2 text-gray-600" />
         <h3 className="font-medium text-sm text-gray-800">分类筛选</h3>
+        {onClose && <button type="button" onClick={onClose} className="ml-auto p-1 rounded-md hover:bg-gray-200" aria-label="关闭">
+          <X size={16} className="text-gray-600" />
+        </button>}
       </div>
 
       <div className="flex-1 overflow-y-auto p-2">

@@ -1,9 +1,7 @@
 // @ts-ignore;
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 // @ts-ignore;
-import { useToast } from '@/components/ui';
-// @ts-ignore;
-import { ArrowLeft, Filter } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 import { SupplierFilter } from '@/components/SupplierFilter';
 import { SupplierTable } from '@/components/SupplierTable';
@@ -48,22 +46,10 @@ const categories = [{
   name: '办公用品'
 }];
 export default function Suppliers(props) {
-  const {
-    toast
-  } = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [suppliers, setSuppliers] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState(['cat1', 'cat2']);
   const [searchQuery, setSearchQuery] = useState('');
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setSuppliers(mockSuppliers);
-      setLoading(false);
-    }, 800);
-  }, []);
-  const filteredSuppliers = suppliers.filter(s => {
+  const filteredSuppliers = mockSuppliers.filter(s => {
     const matchCategory = selectedCategories.length === 0 || selectedCategories.includes(s.category);
     const matchSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCategory && matchSearch;
@@ -80,12 +66,12 @@ export default function Suppliers(props) {
       {/* 主内容 */}
       <main className="p-4">
         <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="搜索供应商名称" />
-        <SupplierTable suppliers={filteredSuppliers} categories={categories} loading={loading} />
+        <SupplierTable suppliers={filteredSuppliers} categories={categories} loading={false} />
       </main>
 
       {/* 侧边栏抽屉 */}
-      <div className={`fixed inset-0 z-20 transform transition-transform duration-300 bg-black/10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="h-full w-64 bg-background shadow-lg">
+      <div onClick={() => setSidebarOpen(false)} className={`fixed inset-0 z-20 transform transition-transform duration-300 bg-black/10 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div onClick={e => e.stopPropagation()} className="h-full w-64 bg-background shadow-lg">
           <SupplierFilter categories={categories} selectedCategories={selectedCategories} onFilterChange={(id, checked) => {
           const updated = checked ? [...selectedCategories, id] : selectedCategories.filter(c => c !== id);
           setSelectedCategories(updated);
